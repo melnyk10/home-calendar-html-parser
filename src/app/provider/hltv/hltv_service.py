@@ -1,7 +1,7 @@
 import logging
 
-from src.provider.hltv.hltv_match_client import HltvMatchesClient
-from src.provider.hltv.hltv_team_client import HltvTeamClient
+from src.app.provider.hltv.hltv_match_client import HltvMatchesClient
+from src.app.provider.hltv.hltv_team_client import HltvTeamClient
 
 logger = logging.getLogger(__name__)
 

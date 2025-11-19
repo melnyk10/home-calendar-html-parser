@@ -7,8 +7,8 @@ from typing import List, Optional
 import httpx
 from bs4 import BeautifulSoup
 
-from src.common.consts import HEADERS
-from src.provider.hltv.dto.HltvTeamResponse import HltvTeamResponse
+from src.app.common.consts import HEADERS
+from src.app.provider.hltv.dto.HltvTeamResponse import HltvTeamResponse
 
 logger = logging.getLogger(__name__)
 

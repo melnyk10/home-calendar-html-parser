@@ -2,10 +2,10 @@ from typing import List
 
 from fastapi import APIRouter
 
-from src.provider.hltv.dto import HltvMatchResponse, HltvTeamResponse
-from src.provider.hltv.hltv_match_client import HltvMatchesClient
-from src.provider.hltv.hltv_service import HltvService
-from src.provider.hltv.hltv_team_client import HltvTeamClient
+from src.app.provider.hltv.dto import HltvMatchResponse, HltvTeamResponse
+from src.app.provider.hltv.hltv_match_client import HltvMatchesClient
+from src.app.provider.hltv.hltv_service import HltvService
+from src.app.provider.hltv.hltv_team_client import HltvTeamClient
 
 router = APIRouter()
 hltv_service = HltvService()

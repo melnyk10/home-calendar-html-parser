@@ -4,7 +4,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime
 
-from src.provider.hltv.dto.HltvStream import HltvStream
+from src.app.provider.hltv.dto.HltvStream import HltvStream
 
 
 class HltvMatchResponse(BaseModel):

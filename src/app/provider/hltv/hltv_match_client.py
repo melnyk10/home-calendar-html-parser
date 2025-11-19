@@ -6,9 +6,9 @@ from typing import List, Optional
 import httpx
 from bs4 import BeautifulSoup
 
-from src.common.consts import HEADERS
-from src.provider.hltv.dto.HltvMatchResponse import HltvMatchResponse
-from src.provider.hltv.dto.HltvStream import HltvStream
+from src.app.common.consts import HEADERS
+from src.app.provider.hltv.dto.HltvMatchResponse import HltvMatchResponse
+from src.app.provider.hltv.dto.HltvStream import HltvStream
 
 logger = logging.getLogger(__name__)
 
