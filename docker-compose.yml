@@ -1,0 +1,12 @@
+version: '3.9'
+
+services:
+  calendar:
+    build: .
+    container_name: calendar_app
+    ports:
+      - "8070:8070"
+    volumes:
+      - .:/app        # Optional: Live code updates
+    env_file:
+      - .env
