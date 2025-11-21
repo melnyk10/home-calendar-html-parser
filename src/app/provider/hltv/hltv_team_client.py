@@ -1,13 +1,9 @@
-import asyncio
 import logging
 import re
 from datetime import date
 from typing import List, Optional
 
-import httpx
-from bs4 import BeautifulSoup
-
-from src.app.common.consts import HEADERS
+from src.app.html.HtmlParserService import HtmlParserService
 from src.app.provider.hltv.dto.HltvTeamResponse import HltvTeamResponse
 
 logger = logging.getLogger(__name__)
@@ -15,31 +11,29 @@ logger = logging.getLogger(__name__)
 
 class HltvTeamClient:
     BASE_URL = "https://www.hltv.org"
+    def __init__(self, html_parser: HtmlParserService):
+      self._html_parser = html_parser
 
     async def get_all_teams(self, limit: Optional[int] = None) -> List[HltvTeamResponse]:
         year = date.today().year
         url = f"{self.BASE_URL}/ranking/teams/{year}/may/19"
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
-            response = await client.get(url)
-            response.raise_for_status()
+        soup = self._html_parser.parse(url)
+        team_divs = soup.select("div.ranked-team.standard-box")
 
-            soup = BeautifulSoup(response.text, "lxml")
-            team_divs = soup.select("div.ranked-team.standard-box")
+        # Apply limit only if provided
+        if limit is not None:
+            team_divs = team_divs[:limit]
 
-            # Apply limit only if provided
-            if limit is not None:
-                team_divs = team_divs[:limit]
+        teams = []
+        for div in team_divs:
+            try:
+                team = self._parse_team(div)
+                if team:
+                    teams.append(team)
+            except Exception as e:
+                logger.warning(f"Failed to parse team div: {e}")
 
-            teams = []
-            for div in team_divs:
-                try:
-                    team = self._parse_team(div)
-                    if team:
-                        teams.append(team)
-                except Exception as e:
-                    logger.warning(f"Failed to parse team div: {e}")
-
-            return teams
+        return teams
 
     def _parse_team(self, container) -> HltvTeamResponse:
         rank = int(container.select_one(".position").text.strip().lstrip("#"))
@@ -66,9 +60,9 @@ class HltvTeamClient:
             team_id_name=team_id_name
         )
 
-async def main():
-  client = HltvTeamClient()
-  teams = await client.get_all_teams()
-  print(teams)
-
-asyncio.run(main())
+# async def main():
+#   client = HltvTeamClient()
+#   teams = await client.get_all_teams()
+#   print(teams)
+#
+# asyncio.run(main())

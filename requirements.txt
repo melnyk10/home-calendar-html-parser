@@ -5,3 +5,4 @@ lxml==5.2.1
 fastapi==0.115.6
 python-dotenv==1.1.0
 brotli==1.1.0
+cloudscraper==1.2.71

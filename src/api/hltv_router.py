@@ -2,15 +2,16 @@ from typing import List
 
 from fastapi import APIRouter
 
-from src.app.provider.hltv.dto import HltvMatchResponse, HltvTeamResponse
+from src.app.html.HtmlParserService import HtmlParserService
+from src.app.provider.hltv.dto.HltvMatchResponse import HltvMatchResponse
+from src.app.provider.hltv.dto.HltvTeamResponse import HltvTeamResponse
 from src.app.provider.hltv.hltv_match_client import HltvMatchesClient
-from src.app.provider.hltv.hltv_service import HltvService
 from src.app.provider.hltv.hltv_team_client import HltvTeamClient
 
 router = APIRouter()
-hltv_service = HltvService()
-hltv_team_client = HltvTeamClient()
-hltv_match_client = HltvMatchesClient()
+html_parser = HtmlParserService()
+hltv_team_client = HltvTeamClient(html_parser)
+hltv_match_client = HltvMatchesClient(html_parser)
 
 
 @router.get("/api/v1/hltv/teams", tags=["hltv"])

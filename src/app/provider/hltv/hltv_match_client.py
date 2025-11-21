@@ -6,7 +6,7 @@ from typing import List, Optional
 import httpx
 from bs4 import BeautifulSoup
 
-from src.app.common.consts import HEADERS
+from src.app.html.HtmlParserService import HtmlParserService
 from src.app.provider.hltv.dto.HltvMatchResponse import HltvMatchResponse
 from src.app.provider.hltv.dto.HltvStream import HltvStream
 
@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 class HltvMatchesClient:
   BASE_URL = "https://www.hltv.org"
+  def __init__(self, html_parser: HtmlParserService):
+    self._html_parser = html_parser
 
   async def sync_matches(self, team_id: int, slug: str) -> List[
     HltvMatchResponse]:
@@ -22,11 +24,7 @@ class HltvMatchesClient:
     Fetch recent match results for a specific HLTV team.
     """
     url = f"{self.BASE_URL}/team/{team_id}/{slug}"
-    async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
-      response = await client.get(url)
-      response.raise_for_status()
-
-    soup = BeautifulSoup(response.text, "lxml")
+    soup = self._html_parser.parse(url)
     matches = await self.parse_match_table(soup)
     return matches
 
@@ -123,12 +121,7 @@ class HltvMatchesClient:
     }
 
     try:
-      async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
-        response = await client.get(match.match_url)
-        response.raise_for_status()
-        html = response.text  # <--- Correct! Will decode gzip/br
-        soup = BeautifulSoup(html, "lxml")
-
+      soup = self._html_parser.parse(match.match_url)
       best_of_text = soup.find(string=re.compile(r"Best of \d+"))
       if best_of_text:
         match.best_of = int(re.search(r"Best of (\d+)", best_of_text).group(1))
