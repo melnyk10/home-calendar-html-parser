@@ -1,9 +1,8 @@
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 
-import httpx
 from bs4 import BeautifulSoup
 
 from src.app.html.HtmlParserService import HtmlParserService
@@ -15,8 +14,21 @@ logger = logging.getLogger(__name__)
 
 class HltvMatchesClient:
   BASE_URL = "https://www.hltv.org"
+
   def __init__(self, html_parser: HtmlParserService):
     self._html_parser = html_parser
+
+  async def sync_future_matches(self, team_id: int, slug: str) -> List[
+    HltvMatchResponse]:
+    match_response = await self.sync_matches(team_id, slug)
+
+    now = datetime.now()
+    two_hours_ago = now - timedelta(hours=2)
+
+    return [
+      match for match in match_response
+      if match.datetime >= two_hours_ago
+    ]
 
   async def sync_matches(self, team_id: int, slug: str) -> List[
     HltvMatchResponse]:

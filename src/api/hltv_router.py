@@ -21,4 +21,4 @@ async def sync_teams() -> List[HltvTeamResponse]:
 
 @router.get("/api/v1/hltv/teams/{team_id}/{slug}/matches", tags=["hltv"])
 async def sync_matches(team_id: int, slug: str) -> List[HltvMatchResponse]:
-  return await hltv_match_client.sync_matches(team_id, slug)
+  return await hltv_match_client.sync_future_matches(team_id, slug)
