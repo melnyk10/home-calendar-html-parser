@@ -59,10 +59,3 @@ class HltvTeamClient:
             team_id=team_id,
             team_id_name=team_id_name
         )
-
-# async def main():
-#   client = HltvTeamClient()
-#   teams = await client.get_all_teams()
-#   print(teams)
-#
-# asyncio.run(main())
