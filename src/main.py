@@ -1,19 +1,19 @@
+import asyncio
 import logging
+import sys
 
-import uvicorn
-from dotenv import load_dotenv
+from src.app_grpc.server import serve
 
-load_dotenv()  # This loads variables from .env into os.environ
+logging.basicConfig(
+  level=logging.INFO,
+  format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+  stream=sys.stdout,
+)
 
-from fastapi import FastAPI
 
-from src.api import hltv_router
+def main() -> None:
+  asyncio.run(serve())
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-app = FastAPI()
-app.include_router(hltv_router.router)
 
 if __name__ == "__main__":
-  uvicorn.run(app, host="0.0.0.0", port=8070)
+  main()
