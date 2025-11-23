@@ -4,10 +4,6 @@ package home_calendar.hltv;
 
 import "google/protobuf/empty.proto";
 
-option java_multiple_files = true;
-option java_package = "com.example.homecalendar.hltv";
-option java_outer_classname = "HltvProto";
-
 // ---- Team ----
 message HltvTeam {
   int32 rank = 1;
@@ -15,6 +11,12 @@ message HltvTeam {
   string logo_url = 3;
   int32 team_id = 4;
   string team_id_name = 5;
+}
+
+message HltvTeamBrief {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
 }
 
 // ---- Stream ----
@@ -36,8 +38,8 @@ message HltvMatch {
   // ISO-8601 datetime string, e.g. "2025-11-04T09:25:00"
   string datetime = 5;
 
-  string team1 = 6;
-  string team2 = 7;
+  HltvTeamBrief team1 = 6;
+  HltvTeamBrief team2 = 7;
 
   int32 score1 = 8;
   int32 score2 = 9;
@@ -50,7 +52,7 @@ message HltvMatch {
 // ---- Requests / Responses ----
 
 message SyncMatchesRequest {
-  int32 team_id = 1;
+  string team_id = 1;
   string slug = 2;
 }
 

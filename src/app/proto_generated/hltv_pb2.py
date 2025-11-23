@@ -25,26 +25,27 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nhltv.proto\x12\x12home_calendar.hltv\x1a\x1bgoogle/protobuf/empty.proto\"_\n\x08HltvTeam\x12\x0c\n\x04rank\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08logo_url\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\x05\x12\x14\n\x0cteam_id_name\x18\x05 \x01(\t\"9\n\nHltvStream\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\"\xe9\x01\n\tHltvMatch\x12\x12\n\nevent_name\x18\x01 \x01(\t\x12\x11\n\tevent_url\x18\x02 \x01(\t\x12\x10\n\x08match_id\x18\x03 \x01(\x03\x12\x11\n\tmatch_url\x18\x04 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x05 \x01(\t\x12\r\n\x05team1\x18\x06 \x01(\t\x12\r\n\x05team2\x18\x07 \x01(\t\x12\x0e\n\x06score1\x18\x08 \x01(\x05\x12\x0e\n\x06score2\x18\t \x01(\x05\x12\x0f\n\x07\x62\x65st_of\x18\n \x01(\x05\x12/\n\x07streams\x18\x0b \x03(\x0b\x32\x1e.home_calendar.hltv.HltvStream\"3\n\x12SyncMatchesRequest\x12\x0f\n\x07team_id\x18\x01 \x01(\x05\x12\x0c\n\x04slug\x18\x02 \x01(\t\"@\n\x11SyncTeamsResponse\x12+\n\x05teams\x18\x01 \x03(\x0b\x32\x1c.home_calendar.hltv.HltvTeam\"E\n\x13SyncMatchesResponse\x12.\n\x07matches\x18\x01 \x03(\x0b\x32\x1d.home_calendar.hltv.HltvMatch2\xb9\x01\n\x0bHltvService\x12J\n\tSyncTeams\x12\x16.google.protobuf.Empty\x1a%.home_calendar.hltv.SyncTeamsResponse\x12^\n\x0bSyncMatches\x12&.home_calendar.hltv.SyncMatchesRequest\x1a\'.home_calendar.hltv.SyncMatchesResponseB,\n\x1d\x63om.example.homecalendar.hltvB\tHltvProtoP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nhltv.proto\x12\x12home_calendar.hltv\x1a\x1bgoogle/protobuf/empty.proto\"_\n\x08HltvTeam\x12\x0c\n\x04rank\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x10\n\x08logo_url\x18\x03 \x01(\t\x12\x0f\n\x07team_id\x18\x04 \x01(\x05\x12\x14\n\x0cteam_id_name\x18\x05 \x01(\t\"7\n\rHltvTeamBrief\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0c\n\x04slug\x18\x03 \x01(\t\"9\n\nHltvStream\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0b\n\x03url\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\"\xaf\x02\n\tHltvMatch\x12\x12\n\nevent_name\x18\x01 \x01(\t\x12\x11\n\tevent_url\x18\x02 \x01(\t\x12\x10\n\x08match_id\x18\x03 \x01(\x03\x12\x11\n\tmatch_url\x18\x04 \x01(\t\x12\x10\n\x08\x64\x61tetime\x18\x05 \x01(\t\x12\x30\n\x05team1\x18\x06 \x01(\x0b\x32!.home_calendar.hltv.HltvTeamBrief\x12\x30\n\x05team2\x18\x07 \x01(\x0b\x32!.home_calendar.hltv.HltvTeamBrief\x12\x0e\n\x06score1\x18\x08 \x01(\x05\x12\x0e\n\x06score2\x18\t \x01(\x05\x12\x0f\n\x07\x62\x65st_of\x18\n \x01(\x05\x12/\n\x07streams\x18\x0b \x03(\x0b\x32\x1e.home_calendar.hltv.HltvStream\"3\n\x12SyncMatchesRequest\x12\x0f\n\x07team_id\x18\x01 \x01(\t\x12\x0c\n\x04slug\x18\x02 \x01(\t\"@\n\x11SyncTeamsResponse\x12+\n\x05teams\x18\x01 \x03(\x0b\x32\x1c.home_calendar.hltv.HltvTeam\"E\n\x13SyncMatchesResponse\x12.\n\x07matches\x18\x01 \x03(\x0b\x32\x1d.home_calendar.hltv.HltvMatch2\xb9\x01\n\x0bHltvService\x12J\n\tSyncTeams\x12\x16.google.protobuf.Empty\x1a%.home_calendar.hltv.SyncTeamsResponse\x12^\n\x0bSyncMatches\x12&.home_calendar.hltv.SyncMatchesRequest\x1a\'.home_calendar.hltv.SyncMatchesResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'hltv_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-  _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'\n\035com.example.homecalendar.hltvB\tHltvProtoP\001'
+  DESCRIPTOR._loaded_options = None
   _globals['_HLTVTEAM']._serialized_start=63
   _globals['_HLTVTEAM']._serialized_end=158
-  _globals['_HLTVSTREAM']._serialized_start=160
-  _globals['_HLTVSTREAM']._serialized_end=217
-  _globals['_HLTVMATCH']._serialized_start=220
-  _globals['_HLTVMATCH']._serialized_end=453
-  _globals['_SYNCMATCHESREQUEST']._serialized_start=455
-  _globals['_SYNCMATCHESREQUEST']._serialized_end=506
-  _globals['_SYNCTEAMSRESPONSE']._serialized_start=508
-  _globals['_SYNCTEAMSRESPONSE']._serialized_end=572
-  _globals['_SYNCMATCHESRESPONSE']._serialized_start=574
-  _globals['_SYNCMATCHESRESPONSE']._serialized_end=643
-  _globals['_HLTVSERVICE']._serialized_start=646
-  _globals['_HLTVSERVICE']._serialized_end=831
+  _globals['_HLTVTEAMBRIEF']._serialized_start=160
+  _globals['_HLTVTEAMBRIEF']._serialized_end=215
+  _globals['_HLTVSTREAM']._serialized_start=217
+  _globals['_HLTVSTREAM']._serialized_end=274
+  _globals['_HLTVMATCH']._serialized_start=277
+  _globals['_HLTVMATCH']._serialized_end=580
+  _globals['_SYNCMATCHESREQUEST']._serialized_start=582
+  _globals['_SYNCMATCHESREQUEST']._serialized_end=633
+  _globals['_SYNCTEAMSRESPONSE']._serialized_start=635
+  _globals['_SYNCTEAMSRESPONSE']._serialized_end=699
+  _globals['_SYNCMATCHESRESPONSE']._serialized_start=701
+  _globals['_SYNCMATCHESRESPONSE']._serialized_end=770
+  _globals['_HLTVSERVICE']._serialized_start=773
+  _globals['_HLTVSERVICE']._serialized_end=958
 # @@protoc_insertion_point(module_scope)

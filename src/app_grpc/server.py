@@ -1,10 +1,11 @@
+# src/app_grpc/server.py
 import logging
 
 import grpc  # the library
 
 from src.app.config.settings import settings
 from src.app.proto_generated import hltv_pb2_grpc
-from src.app.proto_generated.hltv_pb2_grpc import HltvService
+from src.app_grpc.hltv_service import HltvService  # 👈 use YOUR class
 
 logger = logging.getLogger(__name__)
 

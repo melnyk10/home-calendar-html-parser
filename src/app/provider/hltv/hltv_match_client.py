@@ -8,29 +8,31 @@ from bs4 import BeautifulSoup
 from src.app.html.HtmlParserService import HtmlParserService
 from src.app.provider.hltv.dto.HltvMatchResponse import HltvMatchResponse
 from src.app.provider.hltv.dto.HltvStream import HltvStream
+from src.app.provider.hltv.dto.HltvTeamBrief import HltvTeamBrief
 
 logger = logging.getLogger(__name__)
 
 
-class HltvMatchesClient:
+class HltvMatchClient:
   BASE_URL = "https://www.hltv.org"
 
   def __init__(self, html_parser: HtmlParserService):
     self._html_parser = html_parser
 
-  async def sync_future_matches(self, team_id: int, slug: str) -> List[
+  async def sync_future_matches(self, team_id: str, slug: str) -> List[
     HltvMatchResponse]:
     match_response = await self.sync_matches(team_id, slug)
 
-    now = datetime.now()
-    two_hours_ago = now - timedelta(hours=2)
+    # now = datetime.now()
+    # two_hours_ago = now - timedelta(hours=2)
+    #
+    # return [
+    #   match for match in match_response
+    #   if match.datetime >= two_hours_ago
+    # ]
+    return match_response
 
-    return [
-      match for match in match_response
-      if match.datetime >= two_hours_ago
-    ]
-
-  async def sync_matches(self, team_id: int, slug: str) -> List[
+  async def sync_matches(self, team_id: str, slug: str) -> List[
     HltvMatchResponse]:
     """
     Fetch recent match results for a specific HLTV team.
@@ -83,10 +85,11 @@ class HltvMatchesClient:
 
       team_names = tr.select("td.team-center-cell a.team-name")
 
-      team1 = team_names[0].text.strip() if len(
-        team_names) > 0 else None  # todo: is it possible that team1 can be TBD ?
-      team2 = team_names[1].text.strip() if len(
-        team_names) > 1 else None  # todo: is it possible that team1 can be TBD ?
+      team1 = team_names[0]
+      team1Dto = self.extract_id(team1)
+
+      team2 = team_names[1]
+      team2Dto = self.extract_id(team2)
 
       scores = tr.select("div.score-cell span.score")
       score1 = int(scores[0].text.strip()) if len(scores) > 0 and scores[
@@ -107,8 +110,8 @@ class HltvMatchesClient:
         match_id=match_id,
         match_url=match_url,
         datetime=match_datetime,
-        team1=team1,
-        team2=team2,
+        team1=team1Dto,
+        team2=team2Dto,
         score1=score1,
         score2=score2,
       )
@@ -116,21 +119,20 @@ class HltvMatchesClient:
       logger.error(f"Error parsing row: {e}")
       return None
 
+  def extract_id(self, team_tags) -> Optional[HltvTeamBrief]:
+    if not team_tags:
+      return None
+
+    name = team_tags.text.strip()
+    href = team_tags.get("href", "")
+    parts = href.split("/")
+    team_id = int(parts[2]) if len(parts) > 2 else None
+    team_slug = parts[3] if len(parts) > 3 else None
+    return HltvTeamBrief(team_id, name, team_slug)
+
   async def _enrich_match_details(self, match: HltvMatchResponse):
     if not match.match_url:
       return
-
-    HEADERS = {
-      "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/125.0.0.0 Safari/537.36"
-      ),
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9",
-      "Accept-Encoding": "gzip, deflate, br",
-      "Referer": "https://www.hltv.org/",
-    }
 
     try:
       soup = self._html_parser.parse(match.match_url)
