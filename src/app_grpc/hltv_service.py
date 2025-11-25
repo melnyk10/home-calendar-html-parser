@@ -46,9 +46,10 @@ def match_to_proto(match: HltvMatchResponse) -> hltv_pb2.HltvMatch:
   dt_str = match.datetime.isoformat()
   streams_proto = [stream_to_proto(stream) for stream in (match.streams or [])]
 
-  # build team briefs from whatever you have (probably only name for now)
-  team1_brief = brief_team_to_proto(match.team1) if match.team1 is not None else ""
-  team2_brief = brief_team_to_proto(match.team2) if match.team2 is not None else ""
+  team1_brief = brief_team_to_proto(
+    match.team1) if match.team1 is not None else ""
+  team2_brief = brief_team_to_proto(
+    match.team2) if match.team2 is not None else ""
 
   return hltv_pb2.HltvMatch(
     event_name=match.event_name or "",
