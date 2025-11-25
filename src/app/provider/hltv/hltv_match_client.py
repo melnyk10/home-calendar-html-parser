@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
@@ -23,14 +23,13 @@ class HltvMatchClient:
     HltvMatchResponse]:
     match_response = await self.sync_matches(team_id, slug)
 
-    # now = datetime.now()
-    # two_hours_ago = now - timedelta(hours=2)
-    #
-    # return [
-    #   match for match in match_response
-    #   if match.datetime >= two_hours_ago
-    # ]
-    return match_response
+    now = datetime.now()
+    two_hours_ago = now - timedelta(hours=2)
+
+    return [
+      match for match in match_response
+      if match.datetime >= two_hours_ago
+    ]
 
   async def sync_matches(self, team_id: str, slug: str) -> List[
     HltvMatchResponse]:
