@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
@@ -97,14 +97,7 @@ class HltvMatchClient:
       score2 = int(scores[1].text.strip()) if len(scores) > 1 and scores[
         1].text.strip().isdigit() else None
 
-      match_url = None
-      match_id = None
-
-      link = tr.select_one("td.matchpage-button-cell a.matchpage-button")
-      if link and link.has_attr("href"):
-        match_url = f"{self.BASE_URL}{link['href']}"
-        match_id_match = re.search(r"/matches/(\d+)", link["href"])
-        match_id = int(match_id_match.group(1)) if match_id_match else 0
+      match_url, match_id = self.extract_match_url(tr)
 
       return HltvMatchResponse(
         match_id=match_id,
@@ -118,6 +111,20 @@ class HltvMatchClient:
     except Exception as e:
       logger.error(f"Error parsing row: {e}")
       return None
+
+  def extract_match_url(self, tr) -> tuple[Optional[str], Optional[int]]:
+    links = tr.select("a[href]")
+    match_url = None
+    match_id = None
+
+    for a in links:
+      href = a["href"]
+      if href.startswith("/matches/"):
+        match_url = f"{self.BASE_URL}{href}"
+        m = re.search(r"/matches/(\d+)", href)
+        match_id = int(m.group(1)) if m else None
+        break
+    return match_url, match_id
 
   def extract_id(self, team_tags) -> Optional[HltvTeamBrief]:
     if not team_tags:
