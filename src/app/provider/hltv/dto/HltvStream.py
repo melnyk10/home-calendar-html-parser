@@ -6,5 +6,5 @@ from typing import Optional
 class HltvStream:
   name: str
   url: str
-  flag_title: Optional[str]
+  language: Optional[str]
   viewers: Optional[int]

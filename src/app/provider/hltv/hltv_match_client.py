@@ -162,7 +162,7 @@ class HltvMatchClient:
       url = embed.get("data-stream-embed")
 
       img = embed.find("img")
-      flag_title = img.get("title") if img else None
+      language = img.get("title") if img else None
 
       name = None
       for child in embed.children:
@@ -181,7 +181,7 @@ class HltvMatchClient:
         streams.append(HltvStream(
           name=name,
           url=url,
-          flag_title=flag_title,
+          language=language,
           viewers=viewers
         ))
 

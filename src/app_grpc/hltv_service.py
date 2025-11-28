@@ -35,6 +35,7 @@ def stream_to_proto(stream: HltvStream) -> hltv_pb2.HltvStream:
     name=stream.name or "",
     url=stream.url or "",
     language=stream.language or "",
+    viewers=stream.viewers or 0,
   )
 
 

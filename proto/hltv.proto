@@ -22,9 +22,10 @@ message HltvTeamBrief {
 // ---- Stream ----
 // Adjust these fields to match your real HltvStream model if needed.
 message HltvStream {
-  string name = 1;
-  string url = 2;
-  string language = 3;
+  string name = 2;
+  string url = 3;
+  string language = 4;
+  int32 viewers = 5;
 }
 
 // ---- Match ----
