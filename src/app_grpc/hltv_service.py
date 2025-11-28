@@ -24,9 +24,9 @@ def team_to_proto(team: HltvTeamResponse) -> hltv_pb2.HltvTeam:
 
 def brief_team_to_proto(team: HltvTeamBrief) -> hltv_pb2.HltvTeamBrief:
   return hltv_pb2.HltvTeamBrief(
-    id=team.name,
+    id=team.id,
     name=team.name,
-    slug=team.name,
+    slug=team.slug,
   )
 
 
