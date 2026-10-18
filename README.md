@@ -55,11 +55,10 @@ The first request solves the Cloudflare challenge and takes about 10 seconds. La
 Compose starts the service together with FlareSolverr:
 
 ```bash
-touch .env   # docker-compose.yml expects this file; put the variables above in it if needed
 docker compose up --build
 ```
 
-`docker-compose.yml` currently publishes port `8070`, but the server listens on `50051`. To call the service from the host, change the mapping to `"50051:50051"`.
+The gRPC server is published on `localhost:50051` and FlareSolverr on `localhost:8191`. Put any of the variables above in an optional `.env` file.
 
 Without Compose, with FlareSolverr running on the host as shown above:
 
