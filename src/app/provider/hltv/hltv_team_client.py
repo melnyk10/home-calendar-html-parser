@@ -1,6 +1,5 @@
 import logging
 import re
-from datetime import date
 from typing import List, Optional
 
 from src.app.html.HtmlParserService import HtmlParserService
@@ -17,8 +16,8 @@ class HltvTeamClient:
 
   async def get_all_teams(self, limit: Optional[int] = None) -> List[
     HltvTeamResponse]:
-    year = date.today().year
-    url = f"{self.BASE_URL}/ranking/teams/{year}/may/19"
+    # redirects to the latest published ranking
+    url = f"{self.BASE_URL}/ranking/teams"
     soup = self._html_parser.parse(url)
     team_divs = soup.select("div.ranked-team.standard-box")
 
