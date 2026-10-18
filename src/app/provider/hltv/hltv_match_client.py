@@ -26,10 +26,13 @@ class HltvMatchClient:
     now = datetime.now(timezone.utc)
     two_hours_ago = now - timedelta(hours=2)
 
-    return [
+    future_matches = [
       match for match in match_response
       if match.datetime >= two_hours_ago
     ]
+    logger.info(f"Team {team_id} ({slug}): {len(match_response)} matches on page, "
+                f"{len(future_matches)} upcoming")
+    return future_matches
 
   async def sync_matches(self, team_id: str, slug: str) -> List[
     HltvMatchResponse]:
