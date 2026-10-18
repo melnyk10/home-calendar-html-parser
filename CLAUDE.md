@@ -12,8 +12,9 @@ Run everything from the repo root. Imports are absolute from the root (`from src
 
 ```bash
 pip install -r requirements.txt
+docker run -d -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:v3.5.2   # needed for any HLTV fetch
 python -m src.main                # starts the gRPC server on GRPC_HOST:GRPC_PORT (default 0.0.0.0:50051)
-docker compose up --build         # reads .env, mounts the repo into /app
+docker compose up --build         # service + FlareSolverr; reads .env, mounts the repo into /app
 ```
 
 Regenerate gRPC code after editing `proto/hltv.proto`:
@@ -34,10 +35,10 @@ Note: `docker-compose.yml` publishes port 8070, but the server listens on 50051 
 
 Request flow: `src/main.py` → `src/app_grpc/server.py` (`grpc.aio` server) → `src/app_grpc/hltv_service.py` (`HltvService` servicer) → HLTV clients in `src/app/provider/hltv/` → `HtmlParserService`.
 
-- **`HtmlParserService`** (`src/app/html/`) is the single place that does HTTP. It uses `cloudscraper` to get past Cloudflare and returns a `BeautifulSoup` (lxml) tree. When it detects a Cloudflare challenge page (403/503 with "just a moment"), it retries with a fresh scraper session and finally raises `BlockedError`. That is deliberate: a challenge page would otherwise parse as an empty result. One instance is shared by both clients.
+- **`HtmlParserService`** (`src/app/html/`) is the single place that does HTTP. HLTV serves a Cloudflare JS challenge (`cf-mitigated: challenge`) to every non-browser client, so cloudscraper and curl_cffi don't work. The service sends requests to FlareSolverr (`FLARESOLVERR_URL`), which solves the challenge in a headless browser, and returns a `BeautifulSoup` (lxml) tree. It uses one named FlareSolverr session, so the `cf_clearance` cookie is reused after the first request. When FlareSolverr reports an error, it destroys the session, retries and finally raises `BlockedError`. That is deliberate: a challenge page would otherwise parse as an empty result. One instance is shared by both clients.
 - **`HltvTeamClient.get_all_teams`** scrapes the ranking page `/ranking/teams/{current year}/may/19` (the date is hard-coded).
 - **`HltvMatchClient.sync_future_matches`** scrapes `/team/{id}/{slug}`, walks `table.match-table` rows (event header rows set the current event, team rows become matches), then fetches every match page to fill `best_of` and `streams`. It keeps matches whose start is no more than 2 hours in the past. One `SyncMatches` call makes 1 + N HTTP requests.
-- The client methods are `async`, but the scraping inside them is synchronous (`cloudscraper` + `time.sleep`), so a request blocks the event loop while it runs.
+- The client methods are `async`, but the scraping inside them is synchronous (blocking `httpx` calls to FlareSolverr + `time.sleep`), so a request blocks the event loop while it runs.
 - Parsing is defensive: row-level failures are logged and skipped rather than failing the whole request.
 
 ### DTOs and proto mapping

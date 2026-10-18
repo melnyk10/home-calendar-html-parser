@@ -4,7 +4,6 @@ beautifulsoup4==4.12.3
 lxml==5.2.1
 python-dotenv==1.1.0
 brotli==1.1.0
-cloudscraper==1.2.71
 grpcio==1.66.0
 grpcio-tools==1.66.0
 pydantic==2.10.6

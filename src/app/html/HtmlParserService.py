@@ -1,13 +1,17 @@
 import logging
 import time
 
-import cloudscraper
+import httpx
 from bs4 import BeautifulSoup
+
+from src.app.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
 ATTEMPTS = 3
 RETRY_DELAY_SECONDS = 5
+CHALLENGE_TIMEOUT_MS = 60000
+SESSION_NAME = "home-calendar-hltv"
 
 
 class BlockedError(Exception):
@@ -15,26 +19,41 @@ class BlockedError(Exception):
 
 
 class HtmlParserService:
+  """
+  Fetches pages through FlareSolverr, which runs a real browser to pass the
+  Cloudflare JS challenge. Plain HTTP clients (cloudscraper, curl_cffi) get 403.
+  """
+
   def __init__(self):
-    self._scraper = cloudscraper.create_scraper()
+    self._client = httpx.Client(timeout=CHALLENGE_TIMEOUT_MS / 1000 + 30)
 
   def parse(self, url: str) -> BeautifulSoup:
     for attempt in range(1, ATTEMPTS + 1):
-      response = self._scraper.get(url, timeout=30)
-      if not self._is_blocked(response):
-        response.raise_for_status()
-        return BeautifulSoup(response.text, "lxml")
+      result = self._get(url)
+      if result.get("status") == "ok":
+        solution = result["solution"]
+        if solution["status"] >= 400:
+          raise RuntimeError(f"HTTP {solution['status']} on {url}")
+        return BeautifulSoup(solution["response"], "lxml")
 
       logger.warning(
-        f"Blocked by Cloudflare ({response.status_code}) on {url}, attempt {attempt}/{ATTEMPTS}")
+        f"FlareSolverr failed on {url}: {result.get('message')}, attempt {attempt}/{ATTEMPTS}")
       if attempt < ATTEMPTS:
         time.sleep(RETRY_DELAY_SECONDS)
-        # a fresh session gets a new challenge instead of reusing the blocked cookies
-        self._scraper = cloudscraper.create_scraper()
+        # a fresh browser session gets a new challenge instead of reusing the blocked cookies
+        self._reset_session()
 
     # the challenge page would parse as a page with no matches, so fail loudly instead
     raise BlockedError(f"Blocked by Cloudflare on {url} after {ATTEMPTS} attempts")
 
-  @staticmethod
-  def _is_blocked(response) -> bool:
-    return response.status_code in (403, 503) and "just a moment" in response.text.lower()
+  def _get(self, url: str) -> dict:
+    # FlareSolverr creates the session on first use; it keeps the cf_clearance cookie,
+    # so only the first request has to solve the challenge
+    return self._command(cmd="request.get", url=url, session=SESSION_NAME,
+                         maxTimeout=CHALLENGE_TIMEOUT_MS)
+
+  def _reset_session(self) -> None:
+    self._command(cmd="sessions.destroy", session=SESSION_NAME)
+
+  def _command(self, **payload) -> dict:
+    return self._client.post(settings.flaresolverr_url, json=payload).json()

@@ -2,7 +2,7 @@
 
 A gRPC service that scrapes [HLTV.org](https://www.hltv.org) for Counter-Strike team rankings and upcoming matches. Other home-calendar services call it to build match calendars.
 
-HLTV has no public API, so the service downloads HTML pages through [cloudscraper](https://github.com/VeNoMouS/cloudscraper) (to pass Cloudflare checks) and parses them with BeautifulSoup.
+HLTV has no public API, and Cloudflare sends a JavaScript challenge to every non-browser client. The service fetches pages through [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr), which solves the challenge in a headless browser, and parses the HTML with BeautifulSoup.
 
 ## API
 
@@ -21,7 +21,13 @@ If Cloudflare still blocks a page after 3 attempts, the call fails instead of re
 
 ## Running locally
 
-Requires Python 3.9 or newer.
+Requires Python 3.9 or newer and a running FlareSolverr:
+
+```bash
+docker run -d --name flaresolverr -p 8191:8191 ghcr.io/flaresolverr/flaresolverr:v3.5.2
+```
+
+Then start the service:
 
 ```bash
 python3 -m venv .venv
@@ -40,8 +46,13 @@ The server listens on `0.0.0.0:50051` by default.
 | --- | --- | --- |
 | `GRPC_HOST` | `0.0.0.0` | Address the server binds to |
 | `GRPC_PORT` | `50051` | Port the server listens on |
+| `FLARESOLVERR_URL` | `http://localhost:8191/v1` | FlareSolverr API endpoint |
+
+The first request solves the Cloudflare challenge and takes about 10 seconds. Later requests reuse the FlareSolverr session cookie and take 1–3 seconds each.
 
 ## Running with Docker
+
+Compose starts the service together with FlareSolverr:
 
 ```bash
 touch .env   # docker-compose.yml expects this file; put the variables above in it if needed
@@ -50,11 +61,13 @@ docker compose up --build
 
 `docker-compose.yml` currently publishes port `8070`, but the server listens on `50051`. To call the service from the host, change the mapping to `"50051:50051"`.
 
-Without Compose:
+Without Compose, with FlareSolverr running on the host as shown above:
 
 ```bash
 docker build -t home-calendar-html-parser .
-docker run --rm -p 50051:50051 home-calendar-html-parser
+docker run --rm -p 50051:50051 \
+  -e FLARESOLVERR_URL=http://host.docker.internal:8191/v1 \
+  home-calendar-html-parser
 ```
 
 ## Calling the service

@@ -10,3 +10,11 @@ services:
       - .:/app        # Optional: Live code updates
     env_file:
       - .env
+    environment:
+      FLARESOLVERR_URL: http://flaresolverr:8191/v1
+    depends_on:
+      - flaresolverr
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:v3.5.2
+    container_name: flaresolverr
