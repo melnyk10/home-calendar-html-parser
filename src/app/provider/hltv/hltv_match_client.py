@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
@@ -23,7 +23,7 @@ class HltvMatchClient:
     HltvMatchResponse]:
     match_response = await self.sync_matches(team_id, slug)
 
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     two_hours_ago = now - timedelta(hours=2)
 
     return [
@@ -80,7 +80,7 @@ class HltvMatchClient:
     try:
       date_span = tr.select_one("td.date-cell span")
       timestamp = int(date_span.get("data-unix")) // 1000
-      match_datetime = datetime.fromtimestamp(timestamp)
+      match_datetime = datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
       team_names = tr.select("td.team-center-cell a.team-name")
 
