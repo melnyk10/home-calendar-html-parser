@@ -18,6 +18,10 @@ class BlockedError(Exception):
   pass
 
 
+class FlareSolverrUnavailableError(Exception):
+  pass
+
+
 class HtmlParserService:
   """
   Fetches pages through FlareSolverr, which runs a real browser to pass the
@@ -56,4 +60,10 @@ class HtmlParserService:
     self._command(cmd="sessions.destroy", session=SESSION_NAME)
 
   def _command(self, **payload) -> dict:
-    return self._client.post(settings.flaresolverr_url, json=payload).json()
+    try:
+      return self._client.post(settings.flaresolverr_url, json=payload).json()
+    except httpx.ConnectError as e:
+      # drop the httpx traceback; the URL is what tells you what's misconfigured
+      raise FlareSolverrUnavailableError(
+        f"FlareSolverr unreachable at {settings.flaresolverr_url} ({e}). "
+        f"Is it running, and is FLARESOLVERR_URL set?") from None
