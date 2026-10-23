@@ -1,9 +1,15 @@
+networks:
+  home-network:
+    external: true
+
 services:
   calendar:
     build: .
     container_name: calendar_app
     ports:
       - "50051:50051"
+    networks:
+      - home-network
     volumes:
       - .:/app        # Optional: Live code updates
     env_file:
@@ -19,3 +25,5 @@ services:
     container_name: flaresolverr
     ports:
       - "8191:8191"
+    networks:
+      - home-network
