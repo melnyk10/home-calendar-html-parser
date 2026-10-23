@@ -74,14 +74,20 @@ class HltvService(hltv_pb2_grpc.HltvServiceServicer):
     self._match_client = HltvMatchClient(self._html_parser)
 
   async def SyncTeams(self, request: empty_pb2.Empty, context):
-    teams: List[HltvTeamResponse] = await self._team_client.get_all_teams()
+    try:
+      teams: List[HltvTeamResponse] = await self._team_client.get_all_teams()
+    finally:
+      self._html_parser.close_session()
     proto_teams = [team_to_proto(t) for t in teams]
     return hltv_pb2.SyncTeamsResponse(teams=proto_teams)
 
   async def SyncMatches(self, request: hltv_pb2.SyncMatchesRequest, context):
-    matches: List[
-      HltvMatchResponse] = await self._match_client.sync_future_matches(
-      request.team_id, request.slug
-    )
+    try:
+      matches: List[
+        HltvMatchResponse] = await self._match_client.sync_future_matches(
+        request.team_id, request.slug
+      )
+    finally:
+      self._html_parser.close_session()
     proto_matches = [match_to_proto(match) for match in matches]
     return hltv_pb2.SyncMatchesResponse(matches=proto_matches)

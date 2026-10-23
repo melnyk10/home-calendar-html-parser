@@ -45,7 +45,7 @@ class HtmlParserService:
       if attempt < ATTEMPTS:
         time.sleep(RETRY_DELAY_SECONDS)
         # a fresh browser session gets a new challenge instead of reusing the blocked cookies
-        self._reset_session()
+        self.close_session()
 
     # the challenge page would parse as a page with no matches, so fail loudly instead
     raise BlockedError(f"Blocked by Cloudflare on {url} after {ATTEMPTS} attempts")
@@ -56,7 +56,9 @@ class HtmlParserService:
     return self._command(cmd="request.get", url=url, session=SESSION_NAME,
                          maxTimeout=CHALLENGE_TIMEOUT_MS)
 
-  def _reset_session(self) -> None:
+  def close_session(self) -> None:
+    # an open session keeps Chromium running with the last HLTV page loaded,
+    # and its live widgets burn a CPU core until the next sync
     self._command(cmd="sessions.destroy", session=SESSION_NAME)
 
   def _command(self, **payload) -> dict:
